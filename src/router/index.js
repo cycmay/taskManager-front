@@ -7,6 +7,7 @@ Vue.use(VueRouter);
 //1.创建组件
 import Home from '../components/Home.vue'
 import buyitems from "../components/Buyitems.vue"
+import taskmanager from "../components/TaskManager.vue"
 //2. 配置路由
 const routes = [
     {
@@ -16,6 +17,10 @@ const routes = [
             {
                 path: 'buyitems',
                 component: buyitems,
+            },
+            {
+                path: 'taskmanager',
+                component: taskmanager,
             }
         ]
     },

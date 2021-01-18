@@ -20,9 +20,14 @@
         <span slot="title">首页</span>
       </el-menu-item>
       
-      <el-menu-item :key="2" :index="{powerRouter:'/buyitems'}">
+      <el-menu-item :key="2" :index="{powerRouter:'/home/buyitems'}">
         <i class="el-icon-user-solid"></i>
         <span slot="title">购买统计</span>
+      </el-menu-item>
+
+      <el-menu-item :key="3" :index="{powerRouter:'/home/taskmanager'}">
+        <i class="el-icon-user-solid"></i>
+        <span slot="title">任务管理</span>
       </el-menu-item>
 
     </el-menu>

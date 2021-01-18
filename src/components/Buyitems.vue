@@ -394,6 +394,7 @@ export default {
             let dt = new Date(parseInt(data));
             return dt.getFullYear() + '-' + (dt.getMonth() + 1) + '-' + dt.getDate()
         },
+        // select框远程查询
         selectNameQuery(query){
             if (query !== '') {
                 this.axios.get("/api/v1/duproducts", {
