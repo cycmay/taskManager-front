@@ -20,15 +20,34 @@
         <span slot="title">首页</span>
       </el-menu-item>
       
-      <el-menu-item :key="2" :index="{powerRouter:'/home/buyitems'}">
+      <el-menu-item :key="2" index="/home/buyitems" @click="goTo('/home/buyitems')">
         <i class="el-icon-user-solid"></i>
         <span slot="title">购买统计</span>
       </el-menu-item>
 
-      <el-menu-item :key="3" :index="{powerRouter:'/home/taskmanager'}">
+      <el-menu-item :key="3" index="/home/taskmanager" @click="goTo('/home/taskmanager')">
         <i class="el-icon-user-solid"></i>
         <span slot="title">任务管理</span>
       </el-menu-item>
+
+
+      <!-- <el-menu-item :key="4" :index="{powerRouter:'/home/productanalysis'}">
+        <i class="el-icon-user-solid"></i>
+        <span slot="title">产品分析</span> -->
+         
+      </el-menu-item>
+      <el-menu 
+        :default-openeds="['1', '3']"
+        >
+        <el-submenu index="1">
+        <template slot="title"><i class="el-icon-message"></i>产品分析</template>
+        <el-menu-item-group>
+            <!-- <template slot="title">分组一</template> -->
+            <el-menu-item :key="4" index="/home/productanalysis" @click="goTo('/home/productanalysis')">京东产品</el-menu-item>
+            <el-menu-item :key="5" index="/home/vipproductanalysis" @click="goTo('/home/vipproductanalysis')">唯品会产品</el-menu-item>
+        </el-menu-item-group>
+        </el-submenu>
+    </el-menu>
 
     </el-menu>
     
@@ -51,13 +70,9 @@ export default {
     };
   },
   methods: {
-    handleSelect(key, keyPath) {
-      console.log(keyPath);
-
-      this.$router.push({ path: key.powerRouter });
-
-
-    },
+    goTo(path){
+        this.$router.replace(path);
+    }
 
   },
   created: function() {

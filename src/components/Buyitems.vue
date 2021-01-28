@@ -5,8 +5,81 @@
                 <el-input
                     v-model=""
         </el-form>  -->
+        <el-row
+            >
+            <el-col :span="8">
+                <el-form 
+                    :label-position="labelPosition" 
+                    label-width="100px" 
+                    :model="buyitemOverview"
+                    >
+                    <el-form-item label="待收货">
+                        <el-input v-model="buyitemOverview.to_be_received"></el-input>
+                    </el-form-item>
+                    <el-form-item label="待出售">
+                        <el-input v-model="buyitemOverview.to_be_sold"></el-input>
+                    </el-form-item>
+                    <el-form-item label="正在出售">
+                        <el-input v-model="buyitemOverview.on_sale"></el-input>
+                    </el-form-item>
+                    <el-form-item label="已出售">
+                        <el-input v-model="buyitemOverview.has_been_sold"></el-input>
+                    </el-form-item>
+                </el-form>
+            </el-col>
+            <el-col :span="8">
+                <el-form 
+                    :label-position="labelPosition" 
+                    label-width="100px" 
+                    :model="buyitemOverview"
+                    >
+                    <el-form-item label="实际盈利">
+                        <el-input v-model="buyitemOverview.profit"></el-input>
+                    </el-form-item>
+                    <el-form-item label="实际成本">
+                        <el-input v-model="buyitemOverview.total_buy_cost"></el-input>
+                    </el-form-item>
+                    <el-form-item label="实际总成本">
+                        <el-input v-model="buyitemOverview.total_cost"></el-input>
+                    </el-form-item>
+                    <el-form-item label="总销售额">
+                        <el-input v-model="buyitemOverview.sold_total"></el-input>
+                    </el-form-item>
+                </el-form>
+            </el-col>
+            <el-col :span="8">
+                <el-form 
+                    :label-position="labelPosition" 
+                    label-width="100px" 
+                    :model="buyitemOverview"
+                    >
+                    <el-form-item label="利率比">
+                        <el-input v-model="buyitemOverview.ceil"></el-input>
+                    </el-form-item>
+                    <el-form-item label="预计盈利">
+                        <el-input v-model="buyitemOverview.profit_expect"></el-input>
+                    </el-form-item>
+                    <el-form-item label="预计成本">
+                        <el-input v-model="buyitemOverview.cost_future"></el-input>
+                    </el-form-item>
+                    <el-form-item label="预计利率比">
+                        <el-input v-model="buyitemOverview.ceil_future"></el-input>
+                    </el-form-item>
+                </el-form>
+            </el-col>
+            
+        </el-row>
+        <el-row>
+            <el-tabs type="border-card" @tab-click="handleGoodStatusTab">
+                <el-tab-pane label="已购买未收货" name="1"></el-tab-pane>
+                <el-tab-pane label="已收货未出售" name="2"></el-tab-pane>
+                <el-tab-pane label="正在出售" name="3"></el-tab-pane>
+                <el-tab-pane label="已售出" name="4"></el-tab-pane>
+            </el-tabs>
+        </el-row>
         <el-row>
             <el-button type="primary" plain @click="handleAddBuyitem()">添加条目</el-button>
+            
             <el-col class="main-col" :span="24">
                 <el-table 
                     :data="buyitemsData" 
@@ -25,23 +98,108 @@
                             {{ scope.$index + (buyitemsPage.current - 1) * buyitemsPage.showCount + 1 }}
                         </template>
                     </el-table-column>
-                    <el-table-column label="ID" width="60" fixed
-                        prop="id"
+                    <el-table-column label="名称"
+                        width="320"
+                        fixed="left"
                         >
                         <template slot-scope="scope">
-                            <span style="margin-left: 10px">{{ scope.row.id == null ? '' : scope.row.id }}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="名称" width="480">
-                        <template slot-scope="scope">
-                            <img :src="scope.row.imageUrl" width='35'>
+                            <img :src="scope.row.imageUrl" width='80'>
                             <span style="margin-left: 10px">{{ scope.row.name == null ? '' : scope.row.name }}</span>
                         </template>
                     </el-table-column>
                     <el-table-column label="货号" width="150">
-                        <template slot-scope="scope">
-                            <span style="margin-left: 10px">{{ scope.row.articleNumber == null ? '' : scope.row.articleNumber }}</span>
-                        </template>
+                         <template slot-scope="scope"
+                            >
+                            <el-popover
+                                placement="right"
+                                width="500"
+                                trigger="click"
+                                class="bg-purple-light"
+                                >
+                                <el-row
+                                    >
+                                    <el-col
+                                        :span="6"
+                                        >
+                                        Title
+                                    </el-col>
+                                    <el-col
+                                        :span="16"
+                                        v-text="DuProductInfoData.title"
+                                        >
+                                    </el-col>
+                                </el-row>
+                                <el-row
+                                    :gutter="20"
+                                    >
+                                    <el-col
+                                        :span="6"
+                                        >
+                                        SoldNum
+                                    </el-col>
+                                    <el-col
+                                        :span="6"
+                                        v-text="DuProductInfoData.soldNum"
+                                        >
+                                    </el-col>
+                                </el-row>
+                                <el-row
+                                    :gutter="20"
+                                    >
+                                    <el-col
+                                        :span="6"
+                                        >
+                                        SellDate
+                                    </el-col>
+                                    <el-col
+                                        :span="6"
+                                        v-text="DuProductInfoData.sellDate"
+                                        >
+                                    </el-col>
+                                </el-row>
+                                <el-row
+                                    >
+                                    <el-col
+                                        :span="6"
+                                        >
+                                        UpdateTime
+                                    </el-col>
+                                    <el-col
+                                        :span="6"
+                                        >
+                                        <span>
+                                            {{ formatDate_func(DuProductInfoData.updateTime) }}
+                                        </span>
+                                        
+                                    </el-col>
+                                </el-row>
+                                <el-row
+                                    v-for="data in DuProductInfoData.priceList"
+                                    :key="data.size"
+                                >
+                                    
+                                    <el-row type="flex" class="row-bg"
+                                        
+                                    >
+                                        <el-col :span="2">{{ data.size }}</el-col>
+                                        <el-col :span="8"
+                                            v-for="item in data.tradeChannelInfoList"
+                                            :key="item.tradeDesc"
+                                            >
+                                            <div>
+                                                <span width="150" v-text="item.tradeDesc" ></span>
+                                                <span width="100" v-text="item.price/100"></span>
+                                            </div>
+                                        </el-col>
+                                        
+                                    </el-row>
+                                </el-row>
+                                
+                                <el-button slot="reference" @click="getArticleNumberDuProductData(scope.row.articleNumber)">{{ scope.row.articleNumber == null ? '' : scope.row.articleNumber }}</el-button>
+                            </el-popover>
+                        
+                            <!-- <span style="margin-left: 10px">{{ scope.row.articleNumber == null ? '' : scope.row.articleNumber }}</span> -->
+                        </template> 
                     </el-table-column>
                     <el-table-column label="尺码">
                         <template slot-scope="scope">
@@ -111,7 +269,8 @@
                             <span style="margin-left: 10px">{{ scope.row.goodStatus == null ? '' : goodStatusMap[scope.row.goodStatus] }}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="操作" width="240">
+                    <el-table-column label="操作" width="240"
+                        fixed="right">
                         <template slot-scope="scope">
                             <el-button size="mini" @click="handleUpdBuyitem(scope.$index, scope.row)">编辑</el-button>
                             <el-button size="mini" type="danger" @click="handleDeleteBuyitem(scope.$index, scope.row)">删除</el-button>
@@ -328,6 +487,8 @@ export default {
                 totalCount: 0,
                 current: 1
             },
+            // buyitems 查询 goodstatus参数
+            buyitemsQueryGoodStatus: null,
             buyitemsData:[],
             buyitemSoldForm: {
                 visible: false,
@@ -351,6 +512,44 @@ export default {
                 goodStatus: "",
                 submitState: "",
 
+            },
+            labelPosition: 'right',
+            buyitemOverview: {
+                // 待收货
+                to_be_received: '',
+                // 待出售
+                to_be_sold: '',
+                // 正在出售
+                on_sale: '',
+                // 已出售
+                has_been_sold: '',
+                // 实际盈利 选取已经售出的商品
+                profit: '',
+                // 实际成本 选取已经售出的商品
+                total_buy_cost: '',
+                // 总花费
+                total_cost: '',
+                // 总销售额
+                sold_total: '',
+                //  利率比
+                ceil: '',
+                // 预计盈利
+                profit_expect: '',
+                // 预计成本
+                cost_future: '',
+                // 预计利率比
+                ceil_future: '',
+            },
+            // 得物的数据
+            DuProductInfoData: {
+                articleNumber: "",
+                authPrice: "", // 发售价格
+                logoUrl: "", // logoUrl
+                priceList: [], // price数据
+                sellDate: "", // 发售日期
+                soldNum: 0, // 已售数量
+                title: "", // 得物产品title
+                updateTime: new Date(), // 数据更新日期
             },
             buyTimePickerOptions: {
                 disabledDate(time) {
@@ -394,6 +593,16 @@ export default {
             let dt = new Date(parseInt(data));
             return dt.getFullYear() + '-' + (dt.getMonth() + 1) + '-' + dt.getDate()
         },
+        // 格式化时间
+        formatDate_func(data) {
+            // console.log(data);
+            if(data == null) {
+                return null
+            }
+            data = parseInt(data)*1000;
+            let dt = new Date(data);
+            return dt.getFullYear() + '-' + (dt.getMonth() + 1) + '-' + dt.getDate()
+        },
         // select框远程查询
         selectNameQuery(query){
             if (query !== '') {
@@ -424,11 +633,12 @@ export default {
             this.buyitemsPage.current = val;
             this.initBuyitemsData();
         },
-        initBuyitemsData(){
+        initBuyitemsData(goodStatus){
             this.axios.get("/api/v1/getBuyitems", {
                 params:{
                     currentPage: this.buyitemsPage.current,
-                    showCount: this.buyitemsPage.showCount
+                    showCount: this.buyitemsPage.showCount,
+                    goodStatus:goodStatus
                 }
             }).then(
                 res=>{
@@ -441,6 +651,29 @@ export default {
                     }
                 }
             )
+        },
+        // 获取articleNumber在得物的信息
+        getArticleNumberDuProductData(articleNumber){
+            this.axios.get("/api/v1/duproducts", {
+                    params:{
+                        keyword: articleNumber
+                    }
+                }).then(
+                    res=>{
+                        // console.log(res);
+                        if(res.data.code === 200){
+                            if(res.data.data.products.length>0){
+                                this.DuProductInfoData = res.data.data.products[0];
+                            }
+                            else{
+                                this.DuProductInfoData = {}
+                            }
+                        }else{
+                            this.alert(res.data, "错误")
+                        }
+                        // console.log(this.DuProductInfoData);
+                    }
+                );
         },
         handleAddBuyitem(){
             this.buyitemAddUpdForm.title = "添加条目信息";
@@ -512,6 +745,17 @@ export default {
                 }
             )
         },
+        // 获取overview数据
+        initBuyitemsOverviewData(){
+            this.axios.get('/api/v1/getBuyitemsOverview', {}).then(
+                res=>{
+                    // console.log(res);
+                    if(res.data.code===200){
+                        this.buyitemOverview = res.data.data;
+                    }
+                }
+            );
+        },
         initConfigData(){
             this.axios.get('/api/v1/getBuyitemsSize', {}).then(
                 res=>{
@@ -569,11 +813,15 @@ export default {
                     }
                 }
             );
-        }
+        },
+        handleGoodStatusTab(tab, event){
+            this.initBuyitemsData(parseInt(tab.index)+1);
+        },
     },
     created: function(){
-        this.initBuyitemsData();
+        this.initBuyitemsData(null);
         this.initConfigData();
+        this.initBuyitemsOverviewData();
     }
 }
 </script>
@@ -591,4 +839,41 @@ export default {
   margin-right: 0px;
    margin-bottom: 0px;
 }
+
+.el-popover {
+     background: #409EFF;
+     border-radius: 5px;
+     border-color: #d3dce6;
+     border-width: medium;
+     color: #fff;
+     font-size:medium;
+     padding: 25px;
+}
+
+.el-row {
+    margin-bottom: 10px;
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+.el-col {
+border-radius: 4px;
+}
+.bg-purple-dark {
+background: #99a9bf;
+}
+.bg-purple {
+background: #d3dce6;
+}
+.bg-purple-light {
+    background: #909399;
+  }
+.grid-content {
+border-radius: 4px;
+min-height: 36px;
+}
+/* .row-bg {
+padding: 10px 0;
+color: #f9fafc;
+} */
 </style>

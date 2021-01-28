@@ -8,6 +8,8 @@ Vue.use(VueRouter);
 import Home from '../components/Home.vue'
 import buyitems from "../components/Buyitems.vue"
 import taskmanager from "../components/TaskManager.vue"
+import productanalysis from "../components/ProductAnalysis.vue"
+import vipproductanalysis from "../components/VIPProductAnalysis.vue"
 //2. 配置路由
 const routes = [
     {
@@ -21,6 +23,14 @@ const routes = [
             {
                 path: 'taskmanager',
                 component: taskmanager,
+            },
+            {
+                path: 'productanalysis',
+                component: productanalysis,
+            },
+            {
+                path: 'vipproductanalysis',
+                component: vipproductanalysis,
             }
         ]
     },
