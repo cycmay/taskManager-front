@@ -187,11 +187,12 @@
                             <!-- <span style="margin-left: 10px">{{ scope.row.articleNumber == null ? '' : scope.row.articleNumber }}</span> -->
                         </template> 
                     </el-table-column>
-                    <el-table-column label="img" width="60"
+                    <el-table-column label="img"
                         prop="imageUrl"
+                        width="150"
                         >
                         <template slot-scope="scope">
-                            <img :src="scope.row.imageUrl" width="50" style="margin-right:5px">
+                            <img :src="scope.row.imageUrl" width="120" style="margin-right:5px; height:120px; width:120px;">
                         </template>
                     </el-table-column>
                     <el-table-column label="title" 
@@ -341,7 +342,7 @@ export default {
                 }
             }).then(
                 res=>{
-                    // console.log(res);
+                    console.log(res);
                     if(res.data.code === 200){
                         this.productsPage.totalCount = res.data.data.totalCount;
                         this.productsData = res.data.data.products;

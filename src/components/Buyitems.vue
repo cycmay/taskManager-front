@@ -79,7 +79,7 @@
         </el-row>
         <el-row>
             <el-button type="primary" plain @click="handleAddBuyitem()">添加条目</el-button>
-            
+            <el-button type="primary" plain @click="flashBuyitemDuInfo()">刷新得物信息</el-button>
             <el-col class="main-col" :span="24">
                 <el-table 
                     :data="buyitemsData" 
@@ -224,6 +224,18 @@
                     <el-table-column label="期望价格">
                         <template slot-scope="scope">
                             <span style="margin-left: 10px">{{ scope.row.soldPriceExpect == null ? '' : scope.row.soldPriceExpect }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="浮动">
+                        <template slot-scope="scope">
+                            <span style="margin-left: 10px">
+                                <i v-if="scope.row.floating>0"
+                                    class="el-icon-top"
+                                    style="color:red;"></i>
+                                <i v-else
+                                    class="el-icon-bottom"
+                                    style="color:green;"></i>
+                                {{ scope.row.floating == null ? '' : scope.row.floating }}</span>
                         </template>
                     </el-table-column>
                     <el-table-column label="出售价格">
@@ -403,6 +415,21 @@
                         placeholder="请输入期望价格">
                     </el-input>
                 </el-form-item>
+                <el-form-item
+                    label="项目状态"
+                    label-width="120px">
+                    <el-select
+                        v-model="buyitemAddUpdForm.goodStatus"
+                        placeholder="请选择项目状态"
+                        >
+                        <el-option
+                            v-for="item in goodStatusOptions"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="buyitemAddUpdForm.visible = false">取 消</el-button>
@@ -419,14 +446,14 @@
                     label="名称"
                     label-width="120px"
                 >  
-                    <span>{{ buyitemAddUpdForm.name }}</span>
+                    <span>{{ buyitemSoldForm.name }}</span>
                 </el-form-item>
                
                 <el-form-item
                     label="出售平台"
                     label-width="120px">
                     <el-select
-                        v-model="buyitemAddUpdForm.soldTypeId"
+                        v-model="buyitemSoldForm.soldTypeId"
                         placeholder="请选择售出平台"
                         >
                         <el-option
@@ -443,7 +470,7 @@
                     label-width="120px">
                     <el-input
                         style="width:100px;"
-                        v-model="buyitemAddUpdForm.soldPrice"
+                        v-model="buyitemSoldForm.soldPrice"
                         placeholder="请输入购买价格">
                     </el-input>
                 </el-form-item>
@@ -454,7 +481,7 @@
                     <el-date-picker
                         format="yyyy-MM-dd"
                         value-format="timestamp"
-                        v-model="buyitemAddUpdForm.soldTime"
+                        v-model="buyitemSoldForm.soldTime"
                         align="right"
                         type="date"
                         placeholder="选择日期"
@@ -463,8 +490,8 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="buyitemSoldForm.visible = false">取 消</el-button>
-                <el-button type="primary" @click="alterBuyitem()">确 定</el-button>
+                <el-button @click="buyitemSoldForm.visible = false">没意思</el-button>
+                <el-button type="primary" @click="soldBuyitem()">就这样</el-button>
             </div>
         </el-dialog>
     </div>
@@ -481,6 +508,7 @@ export default {
             buyTypeMap: {}, // buyType id-name 映射表
             soldTypeOptions: [],
             soldTypeMap: {}, // soldType id-name 映射表
+            goodStatusOptions: [],
             goodStatusMap: {}, // good status id-name 映射表
             buyitemsPage: {
                 showCount: 20,
@@ -492,7 +520,14 @@ export default {
             buyitemsData:[],
             buyitemSoldForm: {
                 visible: false,
-                title: "售出buyitem"
+                title: "售出buyitem",
+                id: null,
+                name: "",
+                buyCost: 0.0,
+                soldTime: (new Date()).getTime(),
+                soldTypeId: "",
+                soldPrice: 0.0,
+                goodStatus: "",
             },
             buyitemAddUpdForm: {
                 title: "",
@@ -633,12 +668,12 @@ export default {
             this.buyitemsPage.current = val;
             this.initBuyitemsData();
         },
-        initBuyitemsData(goodStatus){
+        initBuyitemsData(){
             this.axios.get("/api/v1/getBuyitems", {
                 params:{
                     currentPage: this.buyitemsPage.current,
                     showCount: this.buyitemsPage.showCount,
-                    goodStatus:goodStatus
+                    goodStatus: this.buyitemsQueryGoodStatus
                 }
             }).then(
                 res=>{
@@ -693,6 +728,8 @@ export default {
             this.buyitemAddUpdForm.buyTime = row.buyTime;
             this.buyitemAddUpdForm.soldTypeId = row.soldTypeId;
             this.buyitemAddUpdForm.soldPriceExpect = row.soldPriceExpect;
+            this.buyitemAddUpdForm.goodStatus = row.goodStatus;
+            // console.log(this.buyitemAddUpdForm);
         },
         handleDeleteBuyitem(index, row){
             this.$confirm('此操作将永久删除相关记录, 您确定删除吗？', '提示', {
@@ -710,19 +747,34 @@ export default {
         // 售出buyitem
         handleSoldBuyitem(index, row){
             this.buyitemSoldForm.visible = true;
-
-            this.buyitemAddUpdForm.submitState = 'Upd';
-            this.buyitemAddUpdForm.id = row.id;
-            this.buyitemAddUpdForm.productId = row.productId;
-            this.buyitemAddUpdForm.name = row.name;
-            this.buyitemAddUpdForm.size = row.size;
-            this.buyitemAddUpdForm.buyTypeId = row.buyTypeId;
-            this.buyitemAddUpdForm.buyCost = row.buyCost;
-            this.buyitemAddUpdForm.buyTime = row.buyTime;
-            this.buyitemAddUpdForm.soldTypeId = row.soldTypeId;
-            this.buyitemAddUpdForm.soldPriceExpect = row.soldPriceExpect;
+            this.buyitemSoldForm.id = row.id;
+            this.buyitemSoldForm.name = row.name;
+            this.buyitemSoldForm.buyTypeId = row.buyTypeId;
+            this.buyitemSoldForm.buyCost = row.buyCost;
+            this.buyitemSoldForm.soldTypeId = row.soldTypeId;
+            this.buyitemSoldForm.soldPrice = row.soldPrice;
             // 售出状态为4
-            this.buyitemAddUpdForm.goodStatus = 4;
+            this.buyitemSoldForm.goodStatus = 4;
+            console.log(this.buyitemSoldForm);
+        },
+        soldBuyitem(){
+             this.axios.post(
+                "/api/v1/soldBuyitem",{
+                    buyitem: this.buyitemSoldForm
+                }             
+            ).then(
+                res=>{
+                    if(res.data.code === 200){
+                        this.initBuyitemsData();
+                        this.$message({
+                            showClose: true,
+                            message: res.data.message,
+                            type: "success"
+                        });
+                    }
+                    this.buyitemSoldForm.visible = false;
+                }
+            )
         },
         alterBuyitem(){
             // console.log(this.buyitemAddUpdForm);
@@ -741,7 +793,6 @@ export default {
                         });
                     }
                     this.buyitemAddUpdForm.visible = false;
-                    this.buyitemSoldForm.visible = false;
                 }
             )
         },
@@ -810,12 +861,36 @@ export default {
                     // console.log(res);
                     if(res.data.code === 200){
                         this.goodStatusMap = res.data.data.goodStatusMap;
+                        for(var index in res.data.data.goodStatusMap){
+                            this.goodStatusOptions.push({
+                                "id": index,
+                                "name": res.data.data.goodStatusMap[index]
+                            })
+                        }
                     }
                 }
             );
         },
         handleGoodStatusTab(tab, event){
-            this.initBuyitemsData(parseInt(tab.index)+1);
+            this.buyitemsQueryGoodStatus = parseInt(tab.index)+1; 
+            this.initBuyitemsData();
+        },
+        // 点击更新得物的buyitem信息
+        flashBuyitemDuInfo(){
+            this.axios.post(
+                "/api/v1/flashBuyitemsDuInfo",{
+                }             
+            ).then(
+                res=>{
+                    if(res.data.code === 200){
+                        this.$message({
+                            showClose: true,
+                            message: res.data.message,
+                            type: "success"
+                        });
+                    }
+                }
+            )
         },
     },
     created: function(){
