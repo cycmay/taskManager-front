@@ -20,21 +20,21 @@
                             {{ scope.$index }}
                         </template>
                     </el-table-column>
-                    <el-table-column label="ID" 
+                    <el-table-column label="ID" width="200"
                         fixed>
                         <template slot-scope="scope">
                             <span style="margin-left: 10px">{{ scope.row._id == null ? '' : scope.row._id }}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="img" width="60"
-                        prop="imgUrl"
+                    <el-table-column label="img" width="160"
+                        
                         >
                         <template slot-scope="scope">
-                            <img :src="scope.row.imgUrl" width="50" style="margin-right:5px">
+                            <img :src="scope.row.imgUrl" width="150">
                         </template>
                     </el-table-column>
-                    <el-table-column label="任务名称" 
-                        fixed
+                    <el-table-column label="任务名称"  width="700"
+                        
                         >
                         <template slot-scope="scope">
                             <span style="margin-left: 10px">{{ scope.row.name == null ? '' : scope.row.name }}</span>
@@ -69,22 +69,22 @@
                             {{ scope.$index }}
                         </template>
                     </el-table-column>
-                    <el-table-column label="img" width="60"
-                        prop="imgUrl"
+                    <el-table-column label="img" width="160"
+                    
                         >
                         <template slot-scope="scope">
-                            <img :src="scope.row.imgUrl" width="50" style="margin-right:5px">
+                            <img :src="scope.row.imgUrl" width="150" style="margin-right:5px">
                         </template>
                     </el-table-column>
                     <el-table-column label="任务名称" 
-                        fixed
+                        width="700"
                         >
                         <template slot-scope="scope">
                             <span style="margin-left: 10px">{{ scope.row.name == null ? '' : scope.row.name }}</span>
                         </template>
                     </el-table-column>
                     <el-table-column label="创建时间" 
-                        fixed
+                        width="100"
                         prop="time"
                         :formatter="formatDate"
                         >
@@ -103,7 +103,6 @@
         <el-dialog 
             :title="taskAddUpdForm.title"
             :visible.sync="taskAddUpdForm.visible"
-            width="990px"
         >
             <el-button type="primary" @click="handleAddEntry()">增加子任务</el-button>
             <el-button type="danger" @click="handleClearEntry()">清空子项目</el-button>
@@ -123,11 +122,11 @@
                         <span style="margin-left: 10px">{{ scope.row.name == null ? '' : scope.row.name }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="img" width="60"
+                <el-table-column label="img" width="160"
                     prop="imgUrl"
                     >
                     <template slot-scope="scope">
-                        <img :src="scope.row.imgUrl" width="50" style="margin-right:5px">
+                        <img :src="scope.row.imgUrl" width="150" style="margin-right:5px">
                     </template>
                 </el-table-column>
                 <el-table-column label="count" width="100"
@@ -137,17 +136,21 @@
                     </template>
                 </el-table-column>
                 <el-table-column label="tips" 
+                    width="250"
                     >
                     <template slot-scope="scope">
                         <span 
                             style="margin-left: 10px"
-                            v-for="tip in scope.row.tips">{{ tip }}</span>
+                            v-for="tip in scope.row.tips">{{ tip }}
+                            </br>
+                        </span>
+                            
                     </template>
                 </el-table-column>
                 <el-table-column label="HREF" width="300"
                     >
                     <template slot-scope="scope">
-                        <span style="margin-left: 10px">{{ scope.row.href == null ? '' : scope.row.href }}</span>
+                        <span style="margin-left: 10px"><a :href="scope.row.href == null ? '' : scope.row.href">{{ scope.row.href == null ? '' : scope.row.href }}</a></span>
                     </template>
                 </el-table-column>
             </el-table>
@@ -158,7 +161,7 @@
                     label="任务名称"
                     label-width="100px">
                     <el-input
-                        style="width:400px;"
+                        style="width:700px;"
                         v-model="taskAddUpdForm.name"
                         placeholder="请输入任务名称">
                     </el-input>
@@ -174,7 +177,6 @@
         <el-dialog 
             :title="entryAddUpdForm.title"
             :visible.sync="entryAddUpdForm.visible"
-            width="990px"
         >
             <el-container>
                 <el-aside width="200px">

@@ -78,8 +78,13 @@
             </el-tabs>
         </el-row>
         <el-row>
-            <el-button type="primary" plain @click="handleAddBuyitem()">添加条目</el-button>
-            <el-button type="primary" plain @click="flashBuyitemDuInfo()">刷新得物信息</el-button>
+            <el-col :span="8">
+                <el-input  v-model="buyitemsQueryKeywords" width=200></el-input>
+                <el-button type="primary" plain @click="handleQueryKeywords()">关键字搜索</el-button>
+                <el-button type="primary" plain @click="handleAddBuyitem()">添加条目</el-button>
+                <el-button type="primary" plain @click="flashBuyitemDuInfo()">刷新得物信息</el-button>
+            </el-col>
+            
             <el-col class="main-col" :span="24">
                 <el-table 
                     :data="buyitemsData" 
@@ -517,6 +522,8 @@ export default {
             },
             // buyitems 查询 goodstatus参数
             buyitemsQueryGoodStatus: null,
+            // buyitems 查询 keywords关键字
+            buyitemsQueryKeywords: null,
             buyitemsData:[],
             buyitemSoldForm: {
                 visible: false,
@@ -669,11 +676,14 @@ export default {
             this.initBuyitemsData();
         },
         initBuyitemsData(){
+            console.log(this.buyitemsQueryKeywords);
+            console.log(this.buyitemsQueryGoodStatus);
             this.axios.get("/api/v1/getBuyitems", {
                 params:{
                     currentPage: this.buyitemsPage.current,
                     showCount: this.buyitemsPage.showCount,
-                    goodStatus: this.buyitemsQueryGoodStatus
+                    goodStatus: this.buyitemsQueryGoodStatus,
+                    keywords: this.buyitemsQueryKeywords,
                 }
             }).then(
                 res=>{
@@ -873,6 +883,9 @@ export default {
         },
         handleGoodStatusTab(tab, event){
             this.buyitemsQueryGoodStatus = parseInt(tab.index)+1; 
+            this.initBuyitemsData();
+        },
+        handleQueryKeywords(){
             this.initBuyitemsData();
         },
         // 点击更新得物的buyitem信息
