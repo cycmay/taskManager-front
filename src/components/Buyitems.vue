@@ -88,7 +88,6 @@
             <el-col class="main-col" :span="24">
                 <el-table 
                     :data="buyitemsData" 
-                    height="960"
                     border 
                     stripe
                     style="width: 100%"

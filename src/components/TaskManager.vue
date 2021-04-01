@@ -1,6 +1,7 @@
 <template>
     <div id="taskmanager">
         <el-button type="primary" plain @click="handleAddSolution()">新建方案</el-button>
+        <el-button type="primary" plain @click="handleExportSolutionsHref()">导出HREF</el-button>
         <el-button type="danger" plain @click="handleDeleteAllSolutions()">删除所有方案</el-button>
 
         <el-row
@@ -26,7 +27,6 @@
                 
                 <el-table
                     :data="data.entryList"
-                    height="960"
                     border
                     stripe
                     style="width: 100%">
@@ -283,8 +283,8 @@ export default {
                 name: "", // 名称
                 entryIdList: [], // 项目id列表
                 entryList: [], // 项目列表
-                target: 1000,
-                deviation: 100,
+                target: 1,
+                deviation: 999,
                 size: 0,
                 submitState: "", // 提交方式
             },
@@ -457,6 +457,21 @@ export default {
             this.solutionAddUpdForm._id = row._id;
             this.solutionAddUpdForm.submitState = "Del";
             this.alterHistoryTask();
+        },
+        // 导出href
+        handleExportSolutionsHref(){
+            var exportHref = "";
+            for (let index = 0; index < this.solutionData.length; index++) {
+                const solution = this.solutionData[index];
+                for (let j = 0; j < solution.entryList.length; j++) {
+                    const entry = solution.entryList[j];
+                    exportHref += entry.href+"\n";
+                }
+            }
+            this.$alert(exportHref, "导出HREF", {
+                confirmButtonText: "Accept",
+                callback: action=>{}
+            });
         },
         // 修改solution数据
         alterSolution(){
