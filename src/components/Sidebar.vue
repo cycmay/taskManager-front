@@ -29,6 +29,10 @@
         <i class="el-icon-user-solid"></i>
         <span slot="title">任务管理</span>
       </el-menu-item>
+      <el-menu-item :key="4" index="/home/accountmanager" @click="goTo('/home/accountmanager')">
+        <i class="el-icon-user-solid"></i>
+        <span slot="title">角色管理</span>
+      </el-menu-item>
 
 
       <!-- <el-menu-item :key="4" :index="{powerRouter:'/home/productanalysis'}">

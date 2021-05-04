@@ -2,6 +2,8 @@
     <div id="taskmanager">
         <el-button type="primary" plain @click="handleAddSolution()">新建方案</el-button>
         <el-button type="primary" plain @click="handleExportSolutionsHref()">导出HREF</el-button>
+        <el-button type="primary" plain @click="handleActivateAllEntry()">全部激活</el-button>
+        <el-button type="primary" plain @click="handleDeactivateAllEntry()">全部暂停</el-button>
         <el-button type="danger" plain @click="handleDeleteAllSolutions()">删除所有方案</el-button>
 
         <el-row
@@ -12,6 +14,8 @@
             
             <h3
                 v-text="data.name"></h3>
+                <el-button type="primary" @click="handlePauseSolution(data)">暂停该方案</el-button>
+                <el-button type="primary" @click="handleRecoverSolution(data)">启动该方案</el-button>
                 <el-button type="primary" @click="handleAddEntry(data._id)">增加子项目</el-button>
                 <el-button type="danger" @click="handleDeleteAllEntries(data._id)">清空子项目</el-button>
                 <el-button type="danger" plain @click="handleAlterSolution(data)">编辑该方案</el-button>
@@ -21,8 +25,10 @@
                     :gutter="20"
                     align="center"
                     style="padding:10px;font-size:20px;">
-                    <el-col :span="6"><div class="grid-content bg-purple">target:[ {{ data.target }} ]</div></el-col>
-                    <el-col :span="6" ><div class="grid-content bg-purple">deviation:[ {{ data.deviation }} ]</div></el-col>
+                    <el-col :span="8"><div class="grid-content bg-purple">id:[ {{ data._id }} ]</div></el-col>
+                    <el-col :span="8"><div class="grid-content bg-purple">target:[ {{ data.target }} ]</div></el-col>
+                    <el-col :span="8" ><div class="grid-content bg-purple">deviation:[ {{ data.deviation }} ]</div></el-col>
+                    <el-col :span="8" ><div class="grid-content bg-purple">status:[ {{ data.status==1?"运行中":"暂停中" }} ]</div></el-col>
                 </el-row>
                 
                 <el-table
@@ -53,7 +59,7 @@
                             <img :src="scope.row.imgUrl" width="150">
                         </template>
                     </el-table-column>
-                    <el-table-column label="name"  width="700"
+                    <el-table-column label="name"  width="500"
                         
                         >
                         <template slot-scope="scope">
@@ -85,11 +91,20 @@
                             <span style="margin-left: 10px"><a :href="scope.row.href == null ? '' : scope.row.href">{{ scope.row.href == null ? '' : scope.row.href }}</a></span>
                         </template>
                     </el-table-column>
+                    <el-table-column label="ACTIVATE"
+                        >
+                        <template slot-scope="scope">
+                            <span style="margin-left: 10px">{{ scope.row.activate == 1 ? '已激活' : "未激活" }}</span>
+                        </template>
+                    </el-table-column>
 
                     <el-table-column label="操作" width="240">
                         <template slot-scope="scope">
                             <el-button size="mini" @click="handleUpdEntry(scope.$index, scope.row)">编辑</el-button>
                             <el-button size="mini" type="danger" @click="handleDeleteEntry(scope.$index, scope.row)">删除</el-button>
+                            <br></br>
+                            <el-button size="mini" type="warning" @click="handleActiveEntry(scope.$index, scope.row)">激活</el-button>
+                            <el-button size="mini" type="info" @click="handleDeactivateEntry(scope.$index, scope.row)">暂停</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -286,6 +301,7 @@ export default {
                 target: 1,
                 deviation: 999,
                 size: 0,
+                status: 1, //1->运行中 2->暂停
                 submitState: "", // 提交方式
             },
             // 子任务创建卡
@@ -302,6 +318,7 @@ export default {
                 href: "", // item地址
                 imgUrl: "", // image地址
                 father: "",
+                activate: 1, // 是否激活
             },
         }
     },
@@ -367,6 +384,78 @@ export default {
             this.solutionAddUpdForm.task = row.task;
             this.solutionAddUpdForm.name = row.name;
         },
+        handlePauseSolution(solution){
+            // console.log(row);
+            this.$confirm('此操作将暂停该方案内所有entry, 您确定暂停吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+                }).then(() => {
+                            this.solutionAddUpdForm._id = solution._id;
+                            this.solutionAddUpdForm.status = 2;
+                            this.pauseSolution();
+                }).catch(() => {
+        
+                });
+        },
+        handleRecoverSolution(solution){
+             // console.log(row);
+            this.$confirm('此操作将启动该方案内所有entry, 您确定启动吗？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+                }).then(() => {
+                            this.solutionAddUpdForm._id = solution._id;
+                            this.solutionAddUpdForm.status = 1;
+                            this.recoverSolution();
+                }).catch(() => {
+        
+                });
+        },
+        pauseSolution(){
+            var params = this.solutionAddUpdForm;
+            var method = "pauseSolution";
+            this.axios.post("/api/v1/JDtask/manageSolutions", {
+                method:method,
+                params:params,
+            }).then(
+                res=>{
+                    // console.log(res);
+                    if(res.data.code === 200){
+                        this.initSolutionsData();
+                        this.$message({
+                            showClose: true,
+                            message: res.data.message,
+                            type: "success"
+                        });
+                    }else{
+                        this.$alert(res.data, "错误")
+                    }
+                }
+            )
+        },
+        recoverSolution(){
+            var params = this.solutionAddUpdForm;
+            var method = "recoverSolution";
+            this.axios.post("/api/v1/JDtask/manageSolutions", {
+                method:method,
+                params:params,
+            }).then(
+                res=>{
+                    // console.log(res);
+                    if(res.data.code === 200){
+                        this.initSolutionsData();
+                        this.$message({
+                            showClose: true,
+                            message: res.data.message,
+                            type: "success"
+                        });
+                    }else{
+                        this.$alert(res.data, "错误")
+                    }
+                }
+            )
+        },
         handleAlterSolution(solution){
             this.solutionAddUpdForm.visible = true;
             this.solutionAddUpdForm.title = "可修改任务";
@@ -427,6 +516,7 @@ export default {
             this.entryAddUpdForm.href = row.href;
             this.entryAddUpdForm.imgUrl = row.imgUrl;
             this.entryAddUpdForm.father = row.father;
+            this.entryAddUpdForm.activate = row.activate;
         },
         handleDeleteEntry(index, row){
             this.$confirm('此操作将永久删除 '+ row._id +' entry记录, 您确定删除吗？', '提示', {
@@ -463,6 +553,7 @@ export default {
             var exportHref = "";
             for (let index = 0; index < this.solutionData.length; index++) {
                 const solution = this.solutionData[index];
+                exportHref += "======================";
                 for (let j = 0; j < solution.entryList.length; j++) {
                     const entry = solution.entryList[j];
                     exportHref += entry.href+"\n";
@@ -553,6 +644,9 @@ export default {
                         if(res.data.code === 200){
                             this.initSolutionsData();
                             this.entryAddUpdForm.visible = false;
+                            this.entryAddUpdForm.pids = [];
+                            this.entryAddUpdForm.pid = [];
+                            this.entryAddUpdForm.tips = [];
                             this.$message({
                                 showClose: true,
                                 message: res.data.message,
@@ -608,10 +702,70 @@ export default {
                 }
             )
         },
-        
+
+        handleActivateAllEntry(){
+            
+        },
+        handleActiveEntry(index, row){
+            this.entryAddUpdForm._id = row._id;
+            this.activateEntry();
+            row.activate = 1;
+        },
+
+        activateEntry(){
+            this.axios.post("/api/v1/JDtask/manageEntries", {
+                    method: "activateEntry",
+                    params: this.entryAddUpdForm,
+                }).then(
+                res=>{
+                    // console.log(res);
+                    if(res.data.code === 200){
+                        // this.initSolutionsData();
+                        this.$message({
+                            showClose: true,
+                            message: res.data.message,
+                            type: "success"
+                        });
+                    }else{
+                        this.$alert(res.data, "错误")
+                    }
+                }
+            )
+        },
+
+        handleDeactivateEntry(index, row){
+            this.entryAddUpdForm._id = row._id;
+            this.deactivateEntry();
+            row.activate = 2;
+        },
+
+        deactivateEntry(){
+            this.axios.post("/api/v1/JDtask/manageEntries", {
+                    method: "deactivateEntry",
+                    params: this.entryAddUpdForm,
+                }).then(
+                res=>{
+                    // console.log(res);
+                    if(res.data.code === 200){
+                        // this.initSolutionsData();
+                        this.$message({
+                            showClose: true,
+                            message: res.data.message,
+                            type: "success"
+                        });
+                    }else{
+                        this.$alert(res.data, "错误")
+                    }
+                }
+            )
+        },
+
         parseTargetUrl(){
+            this.entryAddUpdForm.pids = [];
+            this.entryAddUpdForm.pid = [];
+            this.entryAddUpdForm.tips = [];
             this.axios.post("/api/v1/JDtask/getParsePromoteUrl", {
-                targetUrl: this.entryAddUpdForm.targetUrl
+                targetUrl: this.entryAddUpdForm.targetUrl,
             }).then(
                 res=>{
                     // console.log(res);
