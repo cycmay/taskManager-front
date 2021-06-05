@@ -8,9 +8,11 @@ Vue.use(VueRouter);
 import Home from '../components/Home.vue'
 import buyitems from "../components/Buyitems.vue"
 import taskmanager from "../components/TaskManager.vue"
+import presaletaskmanager from "../components/PresaleTaskManager.vue"
 import accountmanager from "../components/AccountManager.vue"
 import productanalysis from "../components/ProductAnalysis.vue"
 import vipproductanalysis from "../components/VIPProductAnalysis.vue"
+import activityanalysis from "../components/ActivityAnalysis.vue"
 //2. 配置路由
 const routes = [
     {
@@ -26,6 +28,10 @@ const routes = [
                 component: taskmanager,
             },
             {
+                path: 'presaletaskmanager',
+                component: presaletaskmanager,
+            },
+            {
                 path: 'accountmanager',
                 component: accountmanager,
             },
@@ -36,6 +42,10 @@ const routes = [
             {
                 path: 'vipproductanalysis',
                 component: vipproductanalysis,
+            },
+            {
+                path: 'activityanalysis',
+                component: activityanalysis,
             }
         ]
     },

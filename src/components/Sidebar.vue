@@ -29,7 +29,11 @@
         <i class="el-icon-user-solid"></i>
         <span slot="title">任务管理</span>
       </el-menu-item>
-      <el-menu-item :key="4" index="/home/accountmanager" @click="goTo('/home/accountmanager')">
+      <el-menu-item :key="4" index="/home/presaletaskmanager" @click="goTo('/home/presaletaskmanager')">
+        <i class="el-icon-user-solid"></i>
+        <span slot="title">预售任务管理</span>
+      </el-menu-item>
+      <el-menu-item :key="5" index="/home/accountmanager" @click="goTo('/home/accountmanager')">
         <i class="el-icon-user-solid"></i>
         <span slot="title">角色管理</span>
       </el-menu-item>
@@ -47,8 +51,9 @@
         <template slot="title"><i class="el-icon-message"></i>产品分析</template>
         <el-menu-item-group>
             <!-- <template slot="title">分组一</template> -->
-            <el-menu-item :key="4" index="/home/productanalysis" @click="goTo('/home/productanalysis')">京东产品</el-menu-item>
-            <el-menu-item :key="5" index="/home/vipproductanalysis" @click="goTo('/home/vipproductanalysis')">唯品会产品</el-menu-item>
+            <el-menu-item :key="6" index="/home/productanalysis" @click="goTo('/home/productanalysis')">京东产品</el-menu-item>
+            <el-menu-item :key="7" index="/home/activityanalysis" @click="goTo('/home/activityanalysis')">活动产品</el-menu-item>
+            <el-menu-item :key="8" index="/home/vipproductanalysis" @click="goTo('/home/vipproductanalysis')">唯品会产品</el-menu-item>
         </el-menu-item-group>
         </el-submenu>
     </el-menu>
